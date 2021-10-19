@@ -10,6 +10,7 @@ import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.job4j.todo.model.Item;
+import ru.job4j.todo.model.User;
 
 import java.util.List;
 import java.util.function.Function;
@@ -72,6 +73,49 @@ public class ItemDao implements AutoCloseable {
                     }
                     return result;
                 }
+        );
+    }
+
+    public User findUserByEmail(String email) {
+        return this.tx(
+                session -> {
+                    Query query = session.createQuery("from User where email = :email");
+                    query.setParameter("email", email);
+                    User user = (User) query.getResultList().stream().findFirst().orElse(null);
+                    return user;
+                }
+        );
+    }
+
+    public boolean updateUser(User user) {
+        return this.tx(
+                session -> {
+                    boolean result = true;
+                    Query query = session.createQuery(
+                            "update User set "
+                                    + "name = :name, "
+                                    + "email = :email, "
+                                    + "password = :password "
+                                    + "where id = :id");
+                    query.setParameter("name", user.getName());
+                    query.setParameter("email", user.getEmail());
+                    query.setParameter("password", user.getPassword());
+                    query.setParameter("id", user.getId());
+                    if (query.executeUpdate() > 0) {
+                        result = false;
+                    }
+                    return result;
+                }
+        );
+    }
+
+    public User createUser(User user) {
+        return this.tx(
+                session -> {
+                    session.save(user);
+                    return user;
+                }
+
         );
     }
 

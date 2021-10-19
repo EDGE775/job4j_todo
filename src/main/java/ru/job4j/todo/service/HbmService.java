@@ -2,6 +2,7 @@ package ru.job4j.todo.service;
 
 import ru.job4j.todo.dao.ItemDao;
 import ru.job4j.todo.model.Item;
+import ru.job4j.todo.model.User;
 
 import java.util.Comparator;
 import java.util.List;
@@ -32,6 +33,19 @@ public class HbmService implements AutoCloseable {
 
     public boolean updateItem(Item item) {
         return itemDao.replace(item.getId(), item);
+    }
+
+    public void saveUser(User user) {
+        if (user.getId() == 0) {
+            itemDao.createUser(user);
+        } else {
+            itemDao.updateUser(user);
+        }
+
+    }
+
+    public User findUserByEmail(String email) {
+        return itemDao.findUserByEmail(email);
     }
 
     @Override
