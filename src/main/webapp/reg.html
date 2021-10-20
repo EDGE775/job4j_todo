@@ -18,28 +18,6 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-<!--    <script>-->
-<!--        function reg() {-->
-<!--            if (!validateInput()) {-->
-<!--                return;-->
-<!--            }-->
-<!--            $.ajax({-->
-<!--                type: 'POST',-->
-<!--                url: 'http://localhost:8080/todo/reg.do',-->
-<!--                data: JSON.stringify({-->
-<!--                    name: $('#name').val(),-->
-<!--                    email: $('#email').val(),-->
-<!--                    password: $('#password').val()-->
-<!--                }),-->
-<!--                dataType: 'json'-->
-<!--            }).done(function (data) {-->
-<!--            }).fail(function (err) {-->
-<!--                if (err.status == '401') {-->
-<!--                    alert("Пользователь с такой почтой уже зарегистрирован!");-->
-<!--                }-->
-<!--            });-->
-<!--        }-->
-<!--    </script>-->
     <script>
         function validateInput() {
             let valueName = $('#name').val();
@@ -57,7 +35,6 @@
                 alert($('#password').attr('title'));
                 return false;
             }
-            // return true;
         }
     </script>
     <title>TODO</title>

@@ -81,7 +81,7 @@ public class ItemDao implements AutoCloseable {
                 session -> {
                     Query query = session.createQuery("from User where email = :email");
                     query.setParameter("email", email);
-                    User user = (User) query.getResultList().stream().findFirst().orElse(null);
+                    User user = (User) query.uniqueResult();
                     return user;
                 }
         );
@@ -115,7 +115,6 @@ public class ItemDao implements AutoCloseable {
                     session.save(user);
                     return user;
                 }
-
         );
     }
 
