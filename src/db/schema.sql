@@ -14,3 +14,9 @@ CREATE TABLE items
     done        boolean                   not null,
     user_id     int references users (id) not null
 );
+
+CREATE TABLE categories
+(
+    id   SERIAL PRIMARY KEY,
+    name TEXT not null,
+);

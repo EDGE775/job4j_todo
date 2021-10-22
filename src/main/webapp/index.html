@@ -23,7 +23,9 @@
 </head>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 <script>
+    var allCategories = [];
     $(document).ready(function () {
+        getAllCategories();
         setUserName();
         reloadItems();
     });
@@ -53,28 +55,69 @@
         let description = item.description;
         let user = item.user.name;
         let created = item.created;
+        let itemCategories = Array.from(item.categories)
+            .map(cat => cat.name);
+        const checkBoxId = 'check_' + id;
+        const inputId = 'input_' + id;
         let done = item.done == true ? 'checked' : '';
         $('#itemsList tr:last').after(
             '<tr>' +
             '<td>' + description + '</td>' +
+            '<td>' + '<select class=\"form-control\" id=' + inputId + ' ' + 'title="Выберите категорию!" size="3" multiple></select>' + '</td>' +
             '<td>' + user + '</td>' +
             '<td>' + created + '</td>' +
-            '<td>' + '<input type=\"checkbox\" id=' + id + ' ' + done + '>' + '</td>' +
+            '<td>' + '<input type=\"checkbox\" id=' + checkBoxId + ' ' + done + '>' + '</td>' +
             '</tr>');
-        let sel = document.getElementById(id);
+        let sel = document.getElementById(checkBoxId);
         sel.addEventListener('click', checkDone, false);
+        let inp = document.getElementById(inputId);
+        inp.addEventListener('blur', checkSelect, false);
+        for (var category of allCategories) {
+            var newOption = new Option(category.name, category.id);
+            if (itemCategories.includes(category.name)) {
+                newOption.selected = true;
+            }
+            inp.append(newOption);
+        }
     }
 </script>
 <script>
     function checkDone() {
-        let id = this.id;
+        let id = this.id.split('_')[1];
         let checked = this.checked;
         $.ajax({
             type: 'PUT',
             url: 'http://localhost:8080/todo/item',
             data: JSON.stringify({
                 id: id,
-                done: checked
+                done: checked,
+            }),
+            dataType: 'json'
+        }).done(function (data) {
+            reloadItems();
+        }).fail(function (err) {
+            console.log(err);
+        });
+    }
+</script>
+<script>
+    function checkSelect() {
+        let id = this.id.split('_')[1];
+        let selectedIds = Array.from(this.options)
+            .filter(option => option.selected)
+            .map(option => option.value);
+        if (selectedIds.length == 0) {
+            alert(document.getElementById(id).attr('title'));
+            return false;
+        }
+        let selectedCats = allCategories
+            .filter(cat => selectedIds.includes(cat.id.toString()));
+        $.ajax({
+            type: 'PUT',
+            url: 'http://localhost:8080/todo/category',
+            data: JSON.stringify({
+                id: id,
+                categories: selectedCats
             }),
             dataType: 'json'
         }).done(function (data) {
@@ -131,6 +174,21 @@
         });
     }
 </script>
+<script>
+    function getAllCategories() {
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/todo/category',
+            dataType: 'json'
+        }).done(function (data) {
+            for (let category of data) {
+                allCategories.push(category);
+            }
+        }).fail(function (err) {
+            console.log(err);
+        });
+    }
+</script>
 <body>
 <div class="container pt-3">
     <div class="row">
@@ -165,6 +223,7 @@
                     <thead>
                     <tr>
                         <th scope="col">Описание задачи</th>
+                        <th scope="col">Категория</th>
                         <th scope="col">Постановщик</th>
                         <th scope="col">Дата постановки</th>
                         <th scope="col">Выполнение</th>

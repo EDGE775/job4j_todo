@@ -1,6 +1,7 @@
 package ru.job4j.todo.service;
 
 import ru.job4j.todo.dao.ItemDao;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 
@@ -17,7 +18,11 @@ public class HbmService implements AutoCloseable {
     }
 
     public Item addItem(Item item) {
-        return itemDao.add(item);
+        return itemDao.addItem(item);
+    }
+
+    public boolean updateItem(Item item) {
+        return itemDao.replaceItem(item);
     }
 
     public List<Item> findAllItems() {
@@ -29,10 +34,6 @@ public class HbmService implements AutoCloseable {
 
     public Item findItemById(int id) {
         return itemDao.findById(id);
-    }
-
-    public boolean updateItem(Item item) {
-        return itemDao.replace(item.getId(), item);
     }
 
     public void saveUser(User user) {
@@ -51,6 +52,17 @@ public class HbmService implements AutoCloseable {
     @Override
     public void close() throws Exception {
         itemDao.close();
+    }
+
+    public Category findCategoryById(int id) {
+        return itemDao.findCategoryById(id);
+    }
+
+    public List<Category> findAllCategories() {
+        return itemDao.findAllCategories()
+                .stream()
+                .sorted(Comparator.comparingInt(Category::getId))
+                .collect(Collectors.toList());
     }
 
     private static final class Lazy {

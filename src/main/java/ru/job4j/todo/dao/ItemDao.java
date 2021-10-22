@@ -9,6 +9,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.job4j.todo.model.Category;
 import ru.job4j.todo.model.Item;
 import ru.job4j.todo.model.User;
 
@@ -32,7 +33,7 @@ public class ItemDao implements AutoCloseable {
                 .buildSessionFactory();
     }
 
-    public Item add(Item item) {
+    public Item addItem(Item item) {
         return this.tx(
                 session -> {
                     session.save(item);
@@ -44,31 +45,31 @@ public class ItemDao implements AutoCloseable {
 
     public List<Item> findAll() {
         return this.tx(
-                session -> session.createQuery("from Item").list()
+                session -> session.createQuery(
+                        "select distinct i from Item i join fetch i.categories").list()
         );
     }
 
     public Item findById(int id) {
         return this.tx(
-                session -> session.get(Item.class, id)
+                session -> {
+                    Query query = session.createQuery(
+                            "select distinct i from Item i join fetch i.categories where i.id = :id");
+                    query.setParameter("id", id);
+                    return (Item) query.uniqueResult();
+                }
         );
+
     }
 
-    public boolean replace(int id, Item item) {
+    public boolean replaceItem(Item item) {
         return this.tx(
                 session -> {
                     boolean result = true;
-                    Query query = session.createQuery(
-                            "update Item set "
-                                    + "description = :description, "
-                                    + "created = :created, "
-                                    + "done = :done "
-                                    + "where id = :id");
-                    query.setParameter("description", item.getDescription());
-                    query.setParameter("created", item.getCreated());
-                    query.setParameter("done", item.isDone());
-                    query.setParameter("id", id);
-                    if (query.executeUpdate() > 0) {
+                    try {
+                        session.update(item);
+                    } catch (Exception e) {
+                        LOG.error("Ошибка при обновлении item.", e);
                         result = false;
                     }
                     return result;
@@ -115,6 +116,18 @@ public class ItemDao implements AutoCloseable {
                     session.save(user);
                     return user;
                 }
+        );
+    }
+
+    public Category findCategoryById(int id) {
+        return this.tx(
+                session -> session.get(Category.class, id)
+        );
+    }
+
+    public List<Category> findAllCategories() {
+        return this.tx(
+                session -> session.createQuery("from Category ").list()
         );
     }
 
