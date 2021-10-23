@@ -20,3 +20,9 @@ CREATE TABLE categories
     id   SERIAL PRIMARY KEY,
     name TEXT not null,
 );
+
+CREATE TABLE items_categories
+(
+    item_id       BIGINT NOT NULL,
+    categories_id BIGINT NOT NULL
+);
