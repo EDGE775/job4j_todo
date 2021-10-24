@@ -12,6 +12,7 @@ job4j_todo app is a tool for managing tasks.
 User can add tasks to the list and mark them completed.
 Completed tasks disappear from the list.
 You can show all tasks using a special checkbox.
+Only authorized users can view and add tasks.
 
 ## Technologies
 * Java 15
@@ -28,6 +29,10 @@ You can show all tasks using a special checkbox.
 ![ScreenShot](images/image1.png)
 #### All tasks
 ![ScreenShot](images/image2.png)
+#### Registration
+![ScreenShot](images/image4.png)
+#### Authorization
+![ScreenShot](images/image3.png)
 
 ## Contact
 Created by Khlapov Dmitry - feel free to contact me!
